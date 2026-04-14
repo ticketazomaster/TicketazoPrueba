@@ -76,6 +76,7 @@ window.Profile = (() => {
       venue: ticket.venue || event?.venue || 'Lugar por confirmar',
       city: ticket.city || event?.city || '',
       date: ticket.eventDate || event?.date || '',
+      ticketTier: ticket.ticketTier || 'General (GA)',
     };
   }
 
@@ -212,6 +213,7 @@ window.Profile = (() => {
       venue: ticket.venue || event?.venue || '',
       city: ticket.city || event?.city || '',
       eventImage: ticket.eventImage || event?.image || 'assets/img/logo.png',
+      ticketTier: ticket.ticketTier || 'General (GA)',
     };
   }
 
@@ -327,7 +329,7 @@ window.Profile = (() => {
 
   _hydrateState(true);
 
-  async function addTickets(eventId, qty, priceOverride) {
+  async function addTickets(eventId, qty, priceOverride, ticketTier) {
     _hydrateState();
     const event = _findEvent(eventId);
     if (!event) return [];
@@ -349,6 +351,7 @@ window.Profile = (() => {
         qty,
         price: paidPrice,
         buyerUserId: session?.dbUserId,
+        ticketTier: ticketTier
       });
 
       const hydrated = created.map(ticket => ({
@@ -356,6 +359,7 @@ window.Profile = (() => {
         buyerName: session?.name || 'Cliente Ticketazo',
         buyerEmail: session?.email || '',
         purchaseRef: ticket.purchaseRef || purchaseRef,
+        ticketTier: ticketTier || 'General (GA)',
       }));
 
       _setTickets([...hydrated, ...state.tickets]);
@@ -386,6 +390,7 @@ window.Profile = (() => {
         venue: eventForPurchase.venue || '',
         city: eventForPurchase.city || '',
         eventImage: eventForPurchase.image || 'assets/img/logo.png',
+        ticketTier: ticketTier || 'General (GA)',
       });
     }
 
@@ -680,7 +685,7 @@ window.Profile = (() => {
                       ${(display.venue || 'Lugar por confirmar')}${display.city ? `, ${display.city}` : ''}<br>
                       ${Number.isNaN(eventDate.getTime()) ? 'Fecha por confirmar' : eventDate.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}
                     </div>
-                    <span class="ticket-price-tag">Pagado: $${Number(ticket.price || 0).toLocaleString()}</span>
+                    <span class="ticket-price-tag">${display.ticketTier} · Pagado: $${Number(ticket.price || 0).toLocaleString()}</span>
                   </div>
                   <button class="ticket-qr-toggle" onclick="Profile.toggleQR('${ticket.id}')">
                     Ver QR

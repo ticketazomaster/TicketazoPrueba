@@ -126,9 +126,7 @@ window.DB = (() => {
   }
 
   function _ticketAmount(ticket) {
-    const unitPrice = Number(ticket?.precio ?? 0);
-    const quantity = Math.max(1, Number(ticket?.total ?? 1));
-    return unitPrice * quantity;
+    return Number(ticket?.total ?? ticket?.precio ?? 0) || 0;
   }
 
   async function findAdministratorByEmail(email) {
@@ -241,13 +239,22 @@ window.DB = (() => {
       adminId = null;
     }
 
+    let finalImg = localEvent.image || null;
+    if (finalImg) {
+      if (localEvent.status && localEvent.status !== 'active') {
+        finalImg += '#' + localEvent.status;
+      }
+      if (localEvent.prices) {
+        finalImg += '#prices=' + btoa(JSON.stringify(localEvent.prices));
+      }
+    }
     const payload = {
       titulo: localEvent.title,
       fecha: localEvent.date,
       ubicacion: location,
       capacidad: Number(localEvent.ticketCapacity || 0) || 1,
       precio: Number(localEvent.ticketPrice || 0),
-      imagen_url: localEvent.image || null,
+      imagen_url: finalImg,
     };
 
     if (adminId) payload.id_administrador = adminId;
@@ -272,13 +279,22 @@ window.DB = (() => {
     const map = _getEventMap();
     const knownId = map[localEvent.id] ? Number(map[localEvent.id]) : null;
     const location = _eventLocation(localEvent);
+    let finalImg = localEvent.image || null;
+    if (finalImg) {
+      if (localEvent.status && localEvent.status !== 'active') {
+        finalImg += '#' + localEvent.status;
+      }
+      if (localEvent.prices) {
+        finalImg += '#prices=' + btoa(JSON.stringify(localEvent.prices));
+      }
+    }
     const payload = {
       titulo: localEvent.title,
       fecha: localEvent.date,
       ubicacion: location,
       capacidad: Number(localEvent.ticketCapacity || 0) || 1,
       precio: Number(localEvent.ticketPrice || 0),
-      imagen_url: localEvent.image || null,
+      imagen_url: finalImg,
     };
 
     let adminId = null;
@@ -418,10 +434,9 @@ window.DB = (() => {
 
       if (!approved) return;
 
-      const quantity = Math.max(1, Number(ticket.total || 1));
       const amount = _ticketAmount(ticket);
       targetLocalIds.forEach(localId => {
-        summary[localId].sold += quantity;
+        summary[localId].sold += 1;
         summary[localId].revenue += amount;
       });
     });
@@ -496,6 +511,27 @@ window.DB = (() => {
       const { venue, city } = _splitLocation(dbEvent.ubicacion);
       // Primary price = evento.precio; fallback = first boleto precio for legacy events
       const derivedPrice = Number(dbEvent.precio || 0) || (priceByEventId[dbEvent.id] || 0);
+      
+      let rawImg = dbEvent.imagen_url || 'assets/img/logo.png';
+      let derivedStatus = 'active';
+      let derivedPrices = null;
+      
+      const pricesMatch = rawImg.match(/#prices=([^#]+)/);
+      if (pricesMatch) {
+         try {
+            derivedPrices = JSON.parse(atob(pricesMatch[1]));
+            rawImg = rawImg.replace(pricesMatch[0], '');
+         } catch(e) {}
+      }
+
+      if (rawImg.includes('#pending')) {
+        derivedStatus = 'pending';
+        rawImg = rawImg.replace('#pending', '');
+      } else if (rawImg.includes('#rejected')) {
+        derivedStatus = 'rejected';
+        rawImg = rawImg.replace('#rejected', '');
+      }
+
       return {
         id: localId,
         title: dbEvent.titulo || 'Evento Sin Nombre',
@@ -505,9 +541,10 @@ window.DB = (() => {
         city: city || 'Ciudad',
         ticketCapacity: Number(dbEvent.capacidad || 100),
         ticketPrice: derivedPrice,
-        image: dbEvent.imagen_url || 'assets/img/logo.png',
+        prices: derivedPrices,
+        image: rawImg,
         organizerId: adminsMap[dbEvent.id_administrador] || '',
-        status: 'active',
+        status: derivedStatus,
         artist: dbEvent.titulo || 'Artista',
         category: 'Conciertos',
         about: 'Evento importado desde la base de datos.',
@@ -522,7 +559,7 @@ window.DB = (() => {
     return formattedEvents;
   }
 
-  async function createTicketPurchase({ event, qty, price, buyerUserId }) {
+  async function createTicketPurchase({ event, qty, price, buyerUserId, ticketTier }) {
     const sb = client();
     if (!sb) throw new Error('Supabase no esta disponible.');
     if (!event?.id) throw new Error('No se pudo identificar el evento.');
@@ -544,8 +581,8 @@ window.DB = (() => {
 
     const ticketPayloads = Array.from({ length: safeQty }, () => {
       const payload = {
-        total: 1,
-        codigoqr: _ticketCode('TKZ'),
+        total: unitPrice,
+        codigoqr: _ticketCode('TKZ') + (ticketTier ? '#' + ticketTier : ''),
         estado: 'vendido',
         precio: unitPrice,
         id_evento: eventDbId,
@@ -607,6 +644,7 @@ window.DB = (() => {
         venue: location.venue || '',
         city: location.city || '',
         eventImage: event.image || 'assets/img/logo.png',
+        ticketTier: ticket.codigoqr?.includes('#') ? ticket.codigoqr.split('#')[1] : (ticketTier || 'General'),
       };
     });
   }
@@ -658,13 +696,21 @@ window.DB = (() => {
       const location = _splitLocation(dbEvent?.ubicacion, localEvent);
       const payment = paymentsByTicket[ticket.id] || null;
 
+      let rawQr = ticket.codigoqr || '';
+      let parsedTier = 'General';
+      if (rawQr.includes('#')) {
+        const parts = rawQr.split('#');
+        rawQr = parts[0];
+        parsedTier = parts[1];
+      }
+
       return {
         id: `DB-${ticket.id}`,
         dbId: ticket.id,
         eventId: localEvent?.id || `db-event-${ticket.id_evento}`,
         purchaseDate: ticket.fecha ? `${ticket.fecha}T12:00:00` : new Date().toISOString(),
-        price: Number(ticket.precio || 0),
-        qrCode: ticket.codigoqr,
+        price: Number(ticket.precio || ticket.total || 0),
+        qrCode: rawQr,
         purchaseRef: _ticketPurchaseRef(ticket.id),
         buyerName: '',
         buyerEmail: '',
@@ -676,6 +722,7 @@ window.DB = (() => {
         venue: localEvent?.venue || location.venue || '',
         city: localEvent?.city || location.city || '',
         eventImage: localEvent?.image || dbEvent?.imagen_url || 'assets/img/logo.png',
+        ticketTier: parsedTier === 'GA' ? 'General (GA)' : parsedTier
       };
     });
   }

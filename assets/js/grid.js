@@ -66,7 +66,7 @@ window.Grid = (() => {
     const items = [];
 
     EVENTS.forEach(event => {
-      if (event.status === 'expired') return;
+      if (event.status === 'expired' || event.status === 'pending' || event.status === 'rejected') return;
 
       const matchCategory = _cat === 'Todos' || event.category === _cat;
       const matchQuery = !query || [event.city, event.category, event.venue || '', event.tourName || '']
@@ -84,7 +84,7 @@ window.Grid = (() => {
         if (seen.has(key)) return;
         seen.add(key);
         const dates = EVENTS
-          .filter(item => item.artistId === event.artistId && item.tourName === event.tourName && item.status !== 'expired')
+          .filter(item => item.artistId === event.artistId && item.tourName === event.tourName && item.status !== 'expired' && item.status !== 'pending' && item.status !== 'rejected')
           .sort((left, right) => new Date(left.date) - new Date(right.date));
         items.push({ type: 'tour', artistId: event.artistId, tourName: event.tourName, dates });
         return;

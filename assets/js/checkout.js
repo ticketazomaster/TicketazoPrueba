@@ -9,6 +9,7 @@
 window.Checkout = (() => {
   let _eventId = null;
   let _qty = 1;
+  let _selectedTier = 'GA';
 
   function _getEvent() {
     return EVENTS.find(event => event.id === _eventId) || null;
@@ -19,6 +20,13 @@ window.Checkout = (() => {
     const config = typeof Zones !== 'undefined' && Zones.getTicketConfig
       ? Zones.getTicketConfig(_eventId)
       : { price: event?.ticketPrice || 0, capacity: event?.ticketCapacity || 0 };
+      
+    if (event?.prices && Object.keys(event.prices).length > 0) {
+      if (!_selectedTier || !event.prices[_selectedTier]) {
+        _selectedTier = Object.keys(event.prices)[0];
+      }
+      config.price = event.prices[_selectedTier];
+    }
     const sold = typeof Zones !== 'undefined' && Zones.getSoldCount ? Zones.getSoldCount(_eventId) : null;
     const remaining = typeof Zones !== 'undefined' && Zones.getRemainingCapacity
       ? Zones.getRemainingCapacity(_eventId)
@@ -36,6 +44,7 @@ window.Checkout = (() => {
   function open(eventId) {
     _eventId = eventId;
     _qty = 1;
+    _selectedTier = 'GA';
 
     const config = _getConfig();
     if (!config.price || !config.capacity) {
@@ -122,16 +131,29 @@ window.Checkout = (() => {
       <div class="ck-body">
         <div class="ck-section-title">
           <span class="material-symbols-outlined" style="font-size:16px">confirmation_number</span>
-          Selecciona tu cantidad
+          Selecciona tu tipo de boleto cantidad
         </div>
 
-        <div class="ck-ticket-config">
-          <div class="ck-ticket-config-copy">
-            <div class="ck-ticket-config-title">Boleto general</div>
-            <div class="ck-ticket-config-meta">Precio unico por persona</div>
+        ${event.prices && Object.keys(event.prices).length > 0 ? 
+          Object.entries(event.prices).map(([tier, price]) => `
+            <label style="display:flex;align-items:center;padding:12px;border:${_selectedTier === tier ? '2px' : '1px'} solid transparent;border-radius:12px;margin-bottom:10px;cursor:pointer;background: linear-gradient(var(--bg-surface-2), var(--bg-surface-2)) padding-box, ${_selectedTier === tier ? 'linear-gradient(to right, var(--color-pink), var(--color-purple)) border-box' : 'linear-gradient(var(--border-default), var(--border-default)) border-box'};">
+              <input type="radio" name="ck_tier" value="${tier}" ${_selectedTier === tier ? 'checked' : ''} onchange="Checkout.changeTier('${tier}')" style="margin-right:14px;accent-color:var(--color-pink);width:18px;height:18px;">
+              <div style="flex:1">
+                <div style="font-weight:700;color:var(--text-primary);font-size:1rem">${tier === 'GA' ? 'General (GA)' : tier}</div>
+                <div style="font-size:.8rem;color:var(--text-secondary)">Acceso ${tier} al evento</div>
+              </div>
+              <div style="font-weight:700;font-size:1.1rem;color:var(--text-primary)">$${price.toLocaleString()}</div>
+            </label>
+          `).join('')
+        : `
+          <div class="ck-ticket-config">
+            <div class="ck-ticket-config-copy">
+              <div class="ck-ticket-config-title">Boleto general</div>
+              <div class="ck-ticket-config-meta">Precio unico por persona</div>
+            </div>
+            <div class="ck-ticket-config-price">$${config.price.toLocaleString()}</div>
           </div>
-          <div class="ck-ticket-config-price">$${config.price.toLocaleString()}</div>
-        </div>
+        `}
 
         <div class="ck-ticket-capacity">
           <div class="ck-ticket-capacity-row">
@@ -186,6 +208,7 @@ window.Checkout = (() => {
 
         <div class="ck-summary">
           <div class="ck-summary-row"><span>Evento</span><strong>${event.title}</strong></div>
+          <div class="ck-summary-row"><span>Tipo de boleto</span><strong>${event.prices ? (_selectedTier === 'GA' ? 'General (GA)' : _selectedTier) : 'General'}</strong></div>
           <div class="ck-summary-row"><span>Precio por boleto</span><strong>$${config.price.toLocaleString()}</strong></div>
           <div class="ck-summary-row"><span>Cantidad</span><strong>${_qty} boleto${_qty > 1 ? 's' : ''}</strong></div>
           <div class="ck-summary-row"><span>Disponibles</span><strong>${config.remainingKnown ? config.remaining.toLocaleString() : 'Consultando...'}</strong></div>
@@ -346,7 +369,7 @@ window.Checkout = (() => {
       void (async () => {
         try {
           if (typeof Profile !== 'undefined' && Profile.addTickets) {
-            await Profile.addTickets(_eventId, _qty, config.price);
+            await Profile.addTickets(_eventId, _qty, config.price, _selectedTier);
           }
           _render('success');
         } catch (err) {
@@ -375,6 +398,7 @@ window.Checkout = (() => {
     close,
     closeOutside,
     changeQty,
+    changeTier: (tier) => { _selectedTier = tier; _render('tickets'); },
     goConfirm,
     pay,
     goToTickets,
