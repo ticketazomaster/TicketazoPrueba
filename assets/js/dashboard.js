@@ -634,7 +634,7 @@ window.Zones = (() => {
   }
 
   function _renderSales() {
-    const rows = EVENTS.filter(event => event.status !== 'expired')
+    const rows = EVENTS.filter(event => event.status === 'active')
       .map(event => {
         const config = getTicketConfig(event.id);
         const sold = getSoldCount(event.id);
@@ -693,7 +693,7 @@ window.Zones = (() => {
   function _renderPayouts() {
     const currentCommission = Math.max(0, _loadJSON('ticketazo.commission', 5));
     const commMultiplier = currentCommission / 100;
-    const events = EVENTS.filter(event => event.status !== 'expired');
+    const events = EVENTS.filter(event => event.status === 'active');
 
     return `
       <div class="db-page-header"><div><h1>Pagos a Organizadores</h1><p>Consulta la informacion bancaria y distribuye ingresos reales.</p>${_salesNote()}</div></div>
@@ -743,7 +743,7 @@ window.Zones = (() => {
   }
 
   function _renderOverview() {
-    const activeEvents = EVENTS.filter(event => event.status !== 'expired');
+    const activeEvents = EVENTS.filter(event => event.status === 'active');
     const sold = activeEvents.reduce((sum, event) => sum + (Number.isFinite(getSoldCount(event.id)) ? getSoldCount(event.id) : 0), 0);
     const projected = activeEvents.reduce((sum, event) => sum + (Number.isFinite(getRevenue(event.id)) ? getRevenue(event.id) : 0), 0);
     const organizers = new Set(activeEvents.map(event => event.organizerId).filter(Boolean)).size;
