@@ -1,4 +1,0 @@
-# Permite llamar seatsio-publish con solo la anon key (igual que stripe-checkout).
-# https://supabase.com/docs/guides/functions/function-configuration
-[functions.seatsio-publish]
-verify_jwt = false
