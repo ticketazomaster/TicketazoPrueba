@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Ticketazo — Boletos para los mejores eventos de México" />
+  <meta name="theme-color" content="#0A0A0A" />
+  <title>Ticketazo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/variables.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/navbar.css?v=6" />
+  <link rel="stylesheet" href="assets/css/hero.css?v=2" />
+  <link rel="stylesheet" href="assets/css/search.css" />
+  <link rel="stylesheet" href="assets/css/cards.css" />
+  <link rel="stylesheet" href="assets/css/pages.css?v=3" />
+  <link rel="stylesheet" href="assets/css/profile.css?v=7" />
+  <link rel="stylesheet" href="assets/css/modal.css" />
+  <link rel="stylesheet" href="assets/css/dashboard.css?v=15" />
+  <link rel="stylesheet" href="assets/css/checkout.css?v=9" />
+
+  <link rel="stylesheet" href="assets/css/footer.css?v=3" />
+</head>
+
+<body>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav id="navbar">
+    <a class="nav-logo" onclick="App.navigate('home')">
+      <img src="assets/img/logo.png" alt="Logo" class="nav-logo-img" />
+      <span>Ticketazo</span>
+    </a>
+    <div class="nav-right" id="nav-right">
+      <button class="btn btn-ghost btn-sm hidden" id="btn-home-nav" onclick="App.navigate('home')">Volver al
+        inicio</button>
+      <button class="btn-nav-user hidden" id="nav-username" onclick="Profile.open()">Mi cuenta</button>
+      <button class="btn btn-ghost btn-sm hidden" id="btn-dashboard" onclick="Zones.openDashboard()">Panel</button>
+      <button class="btn btn-secondary btn-sm" id="btn-login" onclick="Auth.openModal()">Iniciar Sesión</button>
+      <button class="btn btn-outline btn-sm hidden" id="btn-logout" onclick="Auth.logout()">Cerrar Sesión</button>
+    </div>
+    <button class="hamburger" onclick="App.toggleMobile()" aria-label="Menú">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <button class="mobile-menu-close" onclick="App.toggleMobile()"><svg width="24" height="24" viewBox="0 0 24 24"
+        fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg></button>
+    <div class="nav-logo" style="margin-bottom: 20px" onclick="App.navigate('home');App.toggleMobile()">
+      <img src="assets/img/logo.png" alt="Logo" class="nav-logo-img" />
+      <span style="color:#fff">Ticketazo</span>
+    </div>
+    <a class="mobile-nav-link" onclick="App.navigate('home');App.toggleMobile()">Inicio</a>
+    <a class="mobile-nav-link hidden" id="mob-profile" onclick="Profile.open();App.toggleMobile()">Mi cuenta</a>
+    <a class="mobile-nav-link hidden" id="mob-dashboard" onclick="Zones.openDashboard()">Panel de Control</a>
+    <button class="btn btn-primary w-full" id="mob-login" onclick="Auth.openModal();App.toggleMobile()">Iniciar
+      Sesión</button>
+    <button class="btn btn-outline w-full hidden" id="mob-logout" onclick="Auth.logout();App.toggleMobile()">Cerrar
+      Sesión</button>
+  </div>
+
+  <!-- ══ PAGE: HOME ══ -->
+  <div class="page active" id="page-home">
+
+    <section class="hero" id="hero-section">
+      <div class="hero-track" id="hero-track">
+        <div class="hero-slide">
+          <picture>
+            <source media="(max-width: 768px)"
+              srcset="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=800&h=1200&fit=crop&q=80">
+            <img src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1920&q=80" alt="Concierto"
+              loading="eager" />
+          </picture>
+          <div class="hero-overlay"></div>
+          <div class="hero-overlay-lr"></div>
+        </div>
+        <div class="hero-slide">
+          <picture>
+            <source media="(max-width: 768px)"
+              srcset="https://images.unsplash.com/photo-1503095396549-807759245b35?w=800&h=1200&fit=crop&q=80">
+            <img src="https://images.unsplash.com/photo-1503095396549-807759245b35?w=1920&q=80" alt="Teatro"
+              loading="lazy" />
+          </picture>
+          <div class="hero-overlay"></div>
+          <div class="hero-overlay-lr"></div>
+        </div>
+        <div class="hero-slide">
+          <picture>
+            <source media="(max-width: 768px)"
+              srcset="https://images.unsplash.com/photo-1607313029691-fa108ddf807d?w=800&h=1200&fit=crop&q=80">
+            <img src="https://images.unsplash.com/photo-1607313029691-fa108ddf807d?w=1920&q=80" alt="Synthwave"
+              loading="lazy" />
+          </picture>
+          <div class="hero-overlay"></div>
+          <div class="hero-overlay-lr"></div>
+        </div>
+      </div>
+      <div class="hero-content">
+        <div class="hero-inner" id="hero-inner">
+          <div class="hero-badge">Evento Destacado</div>
+          <h1 class="hero-title" id="hero-title">Vive la Música al Máximo</h1>
+          <p class="hero-sub" id="hero-sub">Consigue tus boletos para los mejores festivales del año.</p>
+          <div class="hero-btns">
+            <button class="btn btn-primary btn-lg" onclick="Carousel.handleBuy()">Comprar Boletos</button>
+            <button class="btn btn-outline btn-lg" id="hero-cta-btn" onclick="Carousel.handleCta()">Ver Bad Bunny
+              Tour</button>
+          </div>
+        </div>
+      </div>
+      <button class="hero-arrow hero-arrow--prev" onclick="Carousel.prev()" aria-label="Anterior">‹</button>
+      <button class="hero-arrow hero-arrow--next" onclick="Carousel.next()" aria-label="Siguiente">›</button>
+      <div class="hero-dots" id="hero-dots" role="tablist"></div>
+    </section>
+
+    <div class="search-bar" id="search-bar">
+      <div class="search-inner">
+
+        <div class="filters-row" role="group">
+          <button class="filter-btn active-all" id="f-all" onclick="Grid.setFilter('all')">Todos</button>
+
+          <button class="filter-btn" id="f-cat" onclick="Grid.toggleCats()"><span class="material-symbols-outlined"
+              style="font-size: 16px; margin-right:4px; vertical-align: text-bottom;">filter_alt</span>
+            Categoría</button>
+        </div>
+        <div class="cat-pills" id="cat-pills" role="group"></div>
+      </div>
+    </div>
+
+    <section class="events-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" id="grid-title">Eventos Destacados</h2>
+          <p class="section-count" id="grid-count"></p>
+        </div>
+        <button class="clear-btn hidden" id="clear-all-btn" onclick="Grid.clearAll()"><span
+            class="material-symbols-outlined"
+            style="font-size: 14px; margin-right:4px; vertical-align: middle;">close</span> Limpiar</button>
+      </div>
+      <div class="events-grid" id="events-grid"></div>
+    </section>
+  </div>
+
+  <!-- ══ PAGE: ARTIST ══ -->
+  <div class="page" id="page-artist">
+    <div class="artist-hero">
+      <img id="artist-hero-img" src="" alt="" />
+      <div class="artist-hero-overlay"></div>
+      <button class="back-btn" onclick="App.goBack()">← Volver</button>
+    </div>
+    <div class="artist-content">
+      <div class="artist-info">
+        <div class="artist-avatar" id="artist-avatar"></div>
+        <div class="artist-meta">
+          <div class="on-tour-badge hidden" id="artist-tour-badge"><svg width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" style="display:inline-flex;margin-right:4px">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="22"></line>
+            </svg> En gira</div>
+          <h1 class="artist-name" id="artist-name"></h1>
+          <p class="artist-genre" id="artist-genre"></p>
+        </div>
+      </div>
+      <p class="artist-bio" id="artist-bio"></p>
+      <div id="artist-tours"></div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: EVENT DETAIL ══ -->
+  <div class="page" id="page-event">
+    <div class="event-hero">
+      <img id="event-hero-img" src="" alt="" />
+      <div class="event-hero-overlay"></div>
+      <button class="back-btn" onclick="App.goBack()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg> Volver</button>
+    </div>
+    <div class="event-content">
+      <div class="event-layout">
+        <div class="event-main">
+          <p class="event-cat-label" id="event-cat"></p>
+          <h1 class="event-title" id="event-title"></h1>
+          <p class="event-artist-name" id="event-artist"></p>
+          <div class="event-meta-row" id="event-meta"></div>
+          <div class="content-section">
+            <div class="section-divider">
+              <div class="section-accent accent--blue-purple"></div>
+              <h2 class="section-heading">Acerca del Evento</h2>
+            </div>
+            <p class="about-text" id="event-about"></p>
+          </div>
+          <div class="content-section hidden" id="event-tour-section">
+            <div class="section-divider">
+              <div class="section-accent accent--pink-blue"></div>
+              <h2 class="section-heading">Otras fechas de la gira</h2>
+              <span class="tour-name-label" id="event-tour-name"></span>
+            </div>
+            <div id="event-tour-dates"></div>
+          </div>
+
+          <div class="content-section">
+            <div class="section-divider">
+              <div class="section-accent accent--blue-pink"></div>
+              <h2 class="section-heading">Los fans también vieron</h2>
+            </div>
+            <div class="also-grid" id="also-grid"></div>
+          </div>
+        </div>
+        <aside class="event-sidebar">
+          <div class="buy-card">
+            <div class="buy-card-top">
+              <div>
+                <div class="buy-from">Desde</div>
+                <div class="buy-price" id="buy-price">$0</div>
+                <div class="buy-currency">MXN</div>
+              </div>
+            </div>
+            <div id="buy-details"></div>
+            <button class="btn btn-secondary w-full" id="buy-main-btn" onclick="Pages.handleBuyClick()">
+              Comprar Boletos
+            </button>
+            <div class="buy-attendees"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" style="display:inline-flex;margin-right:4px">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg> Consultando compras reales...</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PAGE: PROFILE ══ -->
+  <div class="page" id="page-profile"></div>
+
+  <!-- ══ PAGE: TICKET ══ -->
+  <div class="page" id="page-ticket"></div>
+
+  <!-- ══ PAGE: DASHBOARD ══ -->
+  <!-- ══ PAGE: DASHBOARD ══
+       Shell estático en HTML — el JS solo rellena paneles.
+       La estructura flex NUNCA cambia en runtime.
+  ══ -->
+  <div class="page" id="page-dashboard">
+    <div class="db-shell">
+
+      <!-- SIDEBAR -->
+      <aside class="db-sidebar" id="db-sidebar">
+        <div class="db-logo-row">
+          <div class="db-logo-link" onclick="App.navigate('home')">
+            <img src="assets/img/logo.png" alt="Logo" class="db-logo-img" />
+            <div class="db-logo-text">Ticket<span>azo</span></div>
+          </div>
+          <button class="db-close-btn" id="db-close-btn" onclick="Zones.closeSidebar()">
+            <span class="material-symbols-outlined" style="font-size: 24px;">close</span>
+          </button>
+        </div>
+
+        <div class="db-nav-label-static">Panel de Control</div>
+        <nav class="db-nav" id="db-nav"></nav>
+
+        <div class="db-user-block" id="db-user-block"></div>
+      </aside>
+
+      <!-- Overlay para mobile -->
+      <div class="db-overlay" id="db-overlay" onclick="Zones.closeSidebar()"></div>
+
+      <!-- MAIN -->
+      <main class="db-main">
+        <div class="db-topbar">
+          <div class="db-topbar-left">
+            <button class="db-hamburger" onclick="Zones.openSidebar()" aria-label="Abrir menú del panel">
+              <span></span><span></span><span></span>
+            </button>
+            <div class="db-topbar-title" id="db-topbar-title">Panel de Control</div>
+          </div>
+          <div class="db-topbar-right">
+            <button class="db-btn db-btn-secondary" style="font-size:0.8rem; padding:6px 14px;"
+              onclick="App.navigate('home')">
+              <span class="material-symbols-outlined"
+                style="font-size: 16px; margin-right: 4px; vertical-align: middle;">home</span> Volver al inicio
+            </button>
+          </div>
+        </div>
+
+        <div class="db-content">
+          <div class="db-panel" id="panel-events"></div>
+          <div class="db-panel" id="panel-new"></div>
+          <div class="db-panel" id="panel-sales"></div>
+          <div class="db-panel" id="panel-payouts"></div>
+          <div class="db-panel" id="panel-promote"></div>
+          <div class="db-panel" id="panel-overview"></div>
+          <div class="db-panel" id="panel-approve"></div>
+          <div class="db-panel" id="panel-commissions"></div>
+          <div class="db-panel" id="panel-reports"></div>
+        </div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ══ AUTH MODAL ══ -->
+  <div class="modal-overlay" id="modal-overlay" onclick="Auth.closeOutside(event)">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-blob modal-blob--1"></div>
+      <div class="modal-blob modal-blob--2"></div>
+      <button class="modal-close" onclick="Auth.closeModal()" aria-label="Cerrar"><span
+          class="material-symbols-outlined" style="font-size: 20px;">close</span></button>
+      <div class="steps-bar hidden" id="steps-bar">
+        <div class="step-dot active" id="sd1">1</div>
+        <div class="step-line" id="sl1"></div>
+        <div class="step-dot" id="sd2">2</div>
+        <div class="step-line" id="sl2"></div>
+        <div class="step-dot" id="sd3">3</div>
+        <div class="step-line" id="sl3"></div>
+        <div class="step-dot" id="sd4">4</div>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ SEATS.IO DESIGNER (organizador) ══ -->
+  <div class="seatsio-designer-overlay" id="seatsio-designer-overlay" aria-hidden="true"
+    onclick="if(event.target===this)SeatsioMaps.closeDesigner()">
+    <div class="seatsio-designer-modal" role="dialog" aria-modal="true" aria-label="Diseñador de mapa seats.io"
+      onclick="event.stopPropagation()">
+      <button type="button" class="seatsio-designer-close" onclick="SeatsioMaps.closeDesigner()"
+        aria-label="Cerrar diseñador">
+        <span class="material-symbols-outlined" style="font-size:22px">close</span>
+      </button>
+      <div id="seatsio-designer-mount"></div>
+      <div class="seatsio-designer-footer">
+        <p id="seatsio-draft-status" class="seatsio-draft-hint">Se publica y guarda solo mientras editas y otra vez al
+          cerrar (X).</p>
+        <button type="button" class="seatsio-footer-action" id="seatsio-btn-publish"
+          onclick="SeatsioMaps.publishDraftAndSave()">Publicar ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CHECKOUT MODAL ══ -->
+  <div class="checkout-overlay" id="checkout-overlay" onclick="Checkout.closeOutside(event)">
+    <div class="checkout-modal" role="dialog" aria-modal="true" aria-label="Comprar boletos">
+      <div id="checkout-body"></div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer id="main-footer"></footer>
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    window.TICKETAZO_CONFIG = {
+      stripePk: 'pk_test_51TLAxNRX8wopPC4bqki3UtbDNSaWTd6uMPEAgtvKx1ilJORv60uwFRq02Y7tF20M8Cm98D6CaVXN6LGAG70b4R1y000d0rW9mS',
+      supabaseFunctionsUrl: 'https://urumaghjardjgdveblxa.supabase.co/functions/v1',
+      // seats.io — https://app.seats.io (región: na | eu | sa | oc)
+      seatsioRegion: 'na',
+      seatsioPublicKey: '8740e119-dbb2-46a6-926f-78bcf0f46506',
+      // ⚠️ No uses la clave secreta en el front en producción; llama al diseñador desde tu backend.
+      seatsioSecretKey: 'cf843adb-bf0c-415f-a4ca-5d88ad36a311',
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs-fixed@0.0.2/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/db.js?v=27" defer></script>
+  <script src="assets/js/data.js?v=3"></script>
+  <script src="assets/js/seatsio_maps.js?v=5" defer></script>
+  <script src="assets/js/dashboard.js?v=27"></script>
+  <script src="assets/js/profile.js?v=22"></script>
+  <script src="assets/js/checkout.js?v=4" defer></script>
+  <script src="assets/js/carousel.js?v=3"></script>
+  <script src="assets/js/search.js"></script>
+  <script src="assets/js/pages.js?v=8"></script>
+  <script src="assets/js/grid.js?v=5"></script>
+  <script src="assets/js/auth.js?v=9"></script>
+  <script src="assets/js/app.js?v=15"></script>
+</body>
+
+</html>

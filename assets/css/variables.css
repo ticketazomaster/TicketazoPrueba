@@ -1,0 +1,35 @@
+/* ── Design Tokens ── */
+:root {
+  --color-pink:   #FF69B4;
+  --color-blue:   #87CEEB;
+  --color-purple: #8A2BE2;
+
+  --bg-base:      #0A0A0A;
+  --bg-surface:   #111118;
+  --bg-surface-2: #16161f;
+  --border-subtle:#1e1e2e;
+  --border-default:#2a2a3e;
+
+  --text-primary:   #f0f0f5;
+  --text-secondary: #b0b0c0;
+  --text-muted:     #606075;
+
+  --font-display: 'Poppins', sans-serif;
+  --font-body:    'Inter', sans-serif;
+
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-full: 9999px;
+
+  --transition-fast:   0.15s ease;
+  --transition-normal: 0.25s ease;
+
+  --shadow-card:  0 2px 12px rgba(0,0,0,0.4);
+  --shadow-modal: 0 24px 60px rgba(0,0,0,0.7);
+
+  --z-sticky: 30;
+  --z-navbar: 100;
+  --z-modal:  500;
+}

@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Ticketazo — Verificación de boleto"/>
+  <meta name="theme-color" content="#0A0A0A"/>
+  <title>Verificar Boleto — Ticketazo</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-main: #0A0A0A;
+      --bg-card: #111318;
+      --bg-surface: #181B22;
+      --border: rgba(255,255,255,0.08);
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --color-green: #22c55e;
+      --color-red: #ef4444;
+      --color-amber: #f59e0b;
+      --color-blue: #3b82f6;
+      --color-purple: #a855f7;
+      --color-pink: #ec4899;
+      --gradient-primary: linear-gradient(135deg, #ec4899, #a855f7);
+      --gradient-green: linear-gradient(135deg, #22c55e, #16a34a);
+      --gradient-red: linear-gradient(135deg, #ef4444, #dc2626);
+      --font-heading: 'Poppins', sans-serif;
+      --font-body: 'Inter', sans-serif;
+    }
+
+    body {
+      background: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .verify-container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    /* ─── Logo Bar ─── */
+    .verify-brand {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .verify-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    .verify-brand-name {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      vertical-align: middle;
+    }
+    .verify-brand-sub {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ─── Card ─── */
+    .verify-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fadeUp .5s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Status Banner ─── */
+    .status-banner {
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .status-banner--valid {
+      background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(16,163,74,0.06));
+      border-bottom: 1px solid rgba(34,197,94,0.2);
+    }
+    .status-banner--used {
+      background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(220,38,38,0.06));
+      border-bottom: 1px solid rgba(239,68,68,0.2);
+    }
+    .status-banner--notfound {
+      background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(217,119,6,0.06));
+      border-bottom: 1px solid rgba(245,158,11,0.2);
+    }
+    .status-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .status-icon--valid { background: rgba(34,197,94,0.15); color: var(--color-green); }
+    .status-icon--used { background: rgba(239,68,68,0.15); color: var(--color-red); }
+    .status-icon--notfound { background: rgba(245,158,11,0.15); color: var(--color-amber); }
+    .status-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .status-sub {
+      font-size: .8rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* ─── Body ─── */
+    .verify-body {
+      padding: 24px;
+    }
+
+    /* ─── Event Header ─── */
+    .event-header {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .event-img {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .event-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.3;
+    }
+    .event-meta {
+      font-size: .82rem;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    /* ─── Info Grid ─── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .info-item {
+      background: var(--bg-surface);
+      padding: 14px 16px;
+    }
+    .info-item:first-child { border-top-left-radius: 14px; }
+    .info-item:nth-child(2) { border-top-right-radius: 14px; }
+    .info-item:nth-last-child(2):nth-child(odd) { border-bottom-left-radius: 14px; }
+    .info-item:last-child { border-bottom-right-radius: 14px; }
+    .info-label {
+      font-size: .72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+    }
+    .info-value {
+      font-weight: 600;
+      font-size: .88rem;
+      color: var(--text-primary);
+      word-break: break-word;
+    }
+
+    /* ─── Security Note ─── */
+    .security-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 14px 16px;
+      background: rgba(59,130,246,0.06);
+      border: 1px solid rgba(59,130,246,0.12);
+      border-radius: 12px;
+      font-size: .78rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+    .security-note .material-symbols-outlined {
+      font-size: 18px;
+      color: var(--color-blue);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ─── Used Banner Detail ─── */
+    .used-detail {
+      padding: 14px 16px;
+      background: rgba(239,68,68,0.06);
+      border: 1px solid rgba(239,68,68,0.12);
+      border-radius: 12px;
+      font-size: .82rem;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .used-detail strong {
+      color: var(--color-red);
+      display: block;
+      font-size: .9rem;
+      margin-bottom: 4px;
+    }
+
+    /* ─── Buttons ─── */
+    .verify-btn {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: .95rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all .2s ease;
+    }
+    .verify-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .verify-btn--mark {
+      background: var(--gradient-green);
+      color: #fff;
+    }
+    .verify-btn--mark:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34,197,94,0.3);
+    }
+    .verify-btn--home {
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      margin-top: 10px;
+    }
+    .verify-btn--home:hover {
+      background: rgba(255,255,255,0.06);
+    }
+
+    /* ─── Spinner ─── */
+    .verify-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Loading State ─── */
+    .verify-loading {
+      text-align: center;
+      padding: 60px 24px;
+    }
+    .verify-loading .verify-spinner {
+      width: 36px;
+      height: 36px;
+      border-width: 3px;
+      margin-bottom: 16px;
+    }
+    .verify-loading-text {
+      color: var(--text-secondary);
+      font-size: .9rem;
+    }
+
+    /* ─── Login prompt ─── */
+    .login-prompt {
+      padding: 14px 16px;
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.12);
+      border-radius: 12px;
+      font-size: .8rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    /* ─── Error Alert ─── */
+    .verify-error {
+      padding: 12px 16px;
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.15);
+      border-radius: 10px;
+      font-size: .82rem;
+      color: var(--color-red);
+      margin-bottom: 16px;
+      text-align: center;
+      display: none;
+    }
+    .verify-error.show { display: block; }
+
+    /* ─── Success animation ─── */
+    .success-anim {
+      animation: successPop .4s ease;
+    }
+    @keyframes successPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .verify-body { padding: 18px; }
+      .event-header { gap: 12px; }
+      .event-img { width: 56px; height: 56px; border-radius: 10px; }
+      .event-title { font-size: .95rem; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="verify-container" id="verify-root">
+  <div class="verify-brand">
+    <img src="assets/img/logo.png" alt="Ticketazo"/>
+    <span class="verify-brand-name">Ticketazo</span>
+    <div class="verify-brand-sub">Sistema de verificación de boletos</div>
+  </div>
+
+  <div class="verify-card">
+    <div class="verify-loading" id="verify-loading">
+      <div class="verify-spinner"></div>
+      <div class="verify-loading-text">Verificando boleto...</div>
+    </div>
+  </div>
+</div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(() => {
+  // ── Config ──────────────────────────────────────────────
+  const SUPABASE_URL = 'https://urumaghjardjgdveblxa.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVydW1hZ2hqYXJkamdkdmVibHhhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODg3MjAsImV4cCI6MjA4OTM2NDcyMH0.qNfIZu-8lQQKUDzEbwJsF4y3cIthx2nDXwHkHCnaZcI';
+
+  const TABLES = {
+    tickets: 'boleto',
+    events: 'evento',
+    users: 'usuario',
+    payments: 'pago',
+    admins: 'administradores',
+  };
+
+  let sb = null;
+  let currentTicket = null;
+  let isAdmin = false;
+
+  function init() {
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    
+    // Primero buscar en parametros normales ?code=
+    const params = new URLSearchParams(window.location.search);
+    let code = params.get('code');
+
+    // Si falló por redirecciones 301 (Clean URLs), buscar en el hash #code=
+    if (!code && window.location.hash.includes('code=')) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      code = hashParams.get('code');
+    }
+
+    if (!code) {
+      renderNotFound('No se proporcionó un código de boleto.');
+      return;
+    }
+
+    checkAuth().then(() => lookupTicket(code));
+  }
+
+  async function checkAuth() {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session?.user?.email) {
+        const { data } = await sb
+          .from(TABLES.admins)
+          .select('id,rol')
+          .eq('email', session.user.email)
+          .maybeSingle();
+        isAdmin = !!(data?.id);
+      }
+    } catch (_) {
+      isAdmin = false;
+    }
+  }
+
+  async function lookupTicket(code) {
+    try {
+      // Buscar boleto por codigoqr
+      const { data: ticket, error } = await sb
+        .from(TABLES.tickets)
+        .select('id,total,fecha,codigoqr,estado,precio,id_evento,id_usuario,usado,fecha_uso')
+        .eq('codigoqr', code)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!ticket) {
+        renderNotFound('Este boleto no existe en nuestro sistema.');
+        return;
+      }
+
+      // Fetch event
+      let eventData = null;
+      if (ticket.id_evento) {
+        const { data } = await sb
+          .from(TABLES.events)
+          .select('id,titulo,fecha,ubicacion,imagen_url')
+          .eq('id', ticket.id_evento)
+          .maybeSingle();
+        eventData = data;
+      }
+
+      // Fetch buyer
+      let buyerData = null;
+      if (ticket.id_usuario) {
+        const { data } = await sb
+          .from(TABLES.users)
+          .select('nombre,email')
+          .eq('id', ticket.id_usuario)
+          .maybeSingle();
+        buyerData = data;
+      }
+
+      // Fetch payment
+      let paymentData = null;
+      {
+        const { data } = await sb
+          .from(TABLES.payments)
+          .select('estado,metodo')
+          .eq('id_boleto', ticket.id)
+          .maybeSingle();
+        paymentData = data;
+      }
+
+      currentTicket = { ticket, event: eventData, buyer: buyerData, payment: paymentData };
+
+      if (ticket.usado) {
+        renderUsed();
+      } else {
+        try {
+          await fetch(`${SUPABASE_URL}/functions/v1/consume-ticket`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': SUPABASE_ANON,
+              'Authorization': `Bearer ${SUPABASE_ANON}`
+            },
+            body: JSON.stringify({ ticketId: ticket.id })
+          });
+        } catch(e) {
+          console.error("No se pudo quemar el boleto automáticamente", e);
+        }
+        renderValid();
+      }
+    } catch (err) {
+      console.error('[Verify]', err);
+      renderNotFound('Error al consultar el boleto: ' + (err.message || 'Error desconocido'));
+    }
+  }
+
+  // ── Helpers ──────────────────────────────────────────────
+  function splitLocation(loc) {
+    const raw = (loc || '').trim();
+    if (!raw) return { venue: '', city: '' };
+    const parts = raw.split(',').map(p => p.trim()).filter(Boolean);
+    if (parts.length <= 1) return { venue: raw, city: '' };
+    return { venue: parts.slice(0, -1).join(', '), city: parts.at(-1) || '' };
+  }
+
+  function formatDate(val) {
+    if (!val) return 'Por confirmar';
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function formatDateTime(val) {
+    if (!val) return '';
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+      + ' a las '
+      + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function parseTier(qrCode) {
+    if (!qrCode || !qrCode.includes('#')) return 'General';
+    const tier = qrCode.split('#')[1];
+    return tier === 'GA' ? 'General (GA)' : tier;
+  }
+
+  function parseCode(qrCode) {
+    if (!qrCode) return '';
+    return qrCode.includes('#') ? qrCode.split('#')[0] : qrCode;
+  }
+
+  function paymentStatus(val) {
+    const s = (val || '').toLowerCase();
+    if (['aprobado','approved','pagado','paid'].includes(s)) return 'Aprobado';
+    if (['rechazado','rejected','fallido','failed'].includes(s)) return 'Rechazado';
+    return 'Pendiente';
+  }
+
+  // ── Renderers ──────────────────────────────────────────────
+  function renderValid() {
+    const { ticket, event, buyer, payment } = currentTicket;
+    const loc = splitLocation(event?.ubicacion);
+    const tier = parseTier(ticket.codigoqr);
+    const code = parseCode(ticket.codigoqr);
+
+    let imgSrc = event?.imagen_url || 'assets/img/logo.png';
+    imgSrc = imgSrc.replace(/#(pending|rejected|prices=[^#]*)*/g, '');
+
+    const card = document.querySelector('.verify-card');
+    card.innerHTML = `
+      <div class="status-banner status-banner--valid">
+        <div class="status-icon status-icon--valid">
+          <span class="material-symbols-outlined" style="font-size:26px">verified</span>
+        </div>
+        <div>
+          <div class="status-title" style="color:var(--color-green)">Acceso Concedido</div>
+          <div class="status-sub">El boleto es auténtico y ha sido marcado como usado</div>
+        </div>
+      </div>
+
+      <div class="verify-body">
+        <div class="event-header">
+          <img class="event-img" src="${imgSrc}" alt="${event?.titulo || 'Evento'}" onerror="this.src='assets/img/logo.png'"/>
+          <div>
+            <div class="event-title">${event?.titulo || 'Evento Ticketazo'}</div>
+            <div class="event-meta">${loc.venue}${loc.city ? ', ' + loc.city : ''}</div>
+            <div class="event-meta">${formatDate(event?.fecha)}</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Código</div>
+            <div class="info-value">${code}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Tipo</div>
+            <div class="info-value">${tier}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Comprador</div>
+            <div class="info-value">${buyer?.nombre || 'No disponible'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Correo</div>
+            <div class="info-value">${buyer?.email || 'No disponible'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Precio</div>
+            <div class="info-value">$${Number(ticket.precio || 0).toLocaleString()} MXN</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Pago</div>
+            <div class="info-value">${payment ? paymentStatus(payment.estado) : 'Sin registro'}</div>
+          </div>
+        </div>
+
+        <div class="security-note">
+          <span class="material-symbols-outlined">shield</span>
+          <div>Este boleto ha sido validado y su código QR ya no podrá ser escaneado de nuevo por ninguna otra persona.</div>
+        </div>
+
+        <button class="verify-btn verify-btn--home" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined" style="font-size:18px">home</span>
+          Finalizar y volver
+        </button>
+      </div>
+    `;
+  }
+
+  function renderUsed() {
+    const { ticket, event, buyer, payment } = currentTicket;
+    const loc = splitLocation(event?.ubicacion);
+    const tier = parseTier(ticket.codigoqr);
+    const code = parseCode(ticket.codigoqr);
+
+    let imgSrc = event?.imagen_url || 'assets/img/logo.png';
+    imgSrc = imgSrc.replace(/#(pending|rejected|prices=[^#]*)*/g, '');
+
+    const card = document.querySelector('.verify-card');
+    card.innerHTML = `
+      <div class="status-banner status-banner--used">
+        <div class="status-icon status-icon--used">
+          <span class="material-symbols-outlined" style="font-size:26px">block</span>
+        </div>
+        <div>
+          <div class="status-title" style="color:var(--color-red)">Boleto Ya Utilizado</div>
+          <div class="status-sub">Este boleto ya fue escaneado anteriormente</div>
+        </div>
+      </div>
+
+      <div class="verify-body">
+        <div class="used-detail">
+          <strong>⚠️ ACCESO DENEGADO</strong>
+          Este boleto fue marcado como usado el<br/>
+          <strong style="color:var(--text-primary)">${formatDateTime(ticket.fecha_uso)}</strong>
+        </div>
+
+        <div class="event-header">
+          <img class="event-img" src="${imgSrc}" alt="${event?.titulo || 'Evento'}" onerror="this.src='assets/img/logo.png'"/>
+          <div>
+            <div class="event-title">${event?.titulo || 'Evento Ticketazo'}</div>
+            <div class="event-meta">${loc.venue}${loc.city ? ', ' + loc.city : ''}</div>
+            <div class="event-meta">${formatDate(event?.fecha)}</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Código</div>
+            <div class="info-value">${code}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Tipo</div>
+            <div class="info-value">${tier}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Comprador</div>
+            <div class="info-value">${buyer?.nombre || 'No disponible'}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Correo</div>
+            <div class="info-value">${buyer?.email || 'No disponible'}</div>
+          </div>
+        </div>
+
+        <div class="security-note" style="border-color:rgba(239,68,68,0.15);background:rgba(239,68,68,0.04)">
+          <span class="material-symbols-outlined" style="color:var(--color-red)">gpp_bad</span>
+          <div>Este boleto no puede volver a utilizarse. Si crees que esto es un error, contacta al organizador del evento.</div>
+        </div>
+
+        <button class="verify-btn verify-btn--home" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined" style="font-size:18px">home</span>
+          Volver al inicio
+        </button>
+      </div>
+    `;
+  }
+
+  function renderNotFound(message) {
+    const card = document.querySelector('.verify-card');
+    card.innerHTML = `
+      <div class="status-banner status-banner--notfound">
+        <div class="status-icon status-icon--notfound">
+          <span class="material-symbols-outlined" style="font-size:26px">help_outline</span>
+        </div>
+        <div>
+          <div class="status-title" style="color:var(--color-amber)">Boleto No Encontrado</div>
+          <div class="status-sub">${message}</div>
+        </div>
+      </div>
+
+      <div class="verify-body">
+        <div class="security-note" style="border-color:rgba(245,158,11,0.15);background:rgba(245,158,11,0.04)">
+          <span class="material-symbols-outlined" style="color:var(--color-amber)">info</span>
+          <div>El código proporcionado no coincide con ningún boleto en nuestra base de datos. Verifica que el QR sea legítimo.</div>
+        </div>
+
+        <button class="verify-btn verify-btn--home" onclick="window.location.href='index.html'">
+          <span class="material-symbols-outlined" style="font-size:18px">home</span>
+          Volver al inicio
+        </button>
+      </div>
+    `;
+  }
+
+  // ── Mark as Used ──────────────────────────────────────────────
+  window.markUsed = async function() {
+    const btn = document.getElementById('btn-mark');
+    const errEl = document.getElementById('verify-error');
+    if (!btn || !currentTicket) return;
+
+    // Confirm action
+    if (!confirm('¿Estás seguro de marcar este boleto como USADO?\n\nEsta acción no se puede deshacer.')) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="verify-spinner"></span> Procesando...';
+    if (errEl) { errEl.classList.remove('show'); errEl.textContent = ''; }
+
+    try {
+      const qrCode = currentTicket.ticket.codigoqr;
+
+      const { error } = await sb
+        .from(TABLES.tickets)
+        .update({ usado: true, estado: 'usado', fecha_uso: new Date().toISOString() })
+        .eq('id', currentTicket.ticket.id);
+
+      if (error) throw error;
+
+      // Update local state and re-render
+      currentTicket.ticket.usado = true;
+      currentTicket.ticket.fecha_uso = new Date().toISOString();
+      renderUsed();
+
+      // Add success animation
+      const card = document.querySelector('.verify-card');
+      if (card) card.classList.add('success-anim');
+    } catch (err) {
+      console.error('[Verify] Error marking ticket:', err);
+      if (errEl) {
+        errEl.textContent = err.message || 'No se pudo marcar el boleto. Intenta de nuevo.';
+        errEl.classList.add('show');
+      }
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:20px">qr_code_scanner</span> Marcar como Usado';
+    }
+  };
+
+  // Boot
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Refresca automáticamente la página si el teléfono vuelve a enfocar el navegador después de usar la cámara
+  const loadTime = Date.now();
+  const forceReload = () => {
+    // Solo recargar si han pasado al menos 2.5 segundos desde que cargó (evita bucles infinitos)
+    if (Date.now() - loadTime > 2500) {
+      window.location.reload();
+    }
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') forceReload();
+  });
+  window.addEventListener('focus', forceReload);
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) forceReload();
+  });
+
+})();
+</script>
+
+</body>
+</html>
